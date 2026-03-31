@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 AGENTMONUZZ NETWORK ADMIN 👑</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        :root { --gold: #ffcc00; --violet: #d400ff; --bg: rgba(15, 15, 15, 0.95); --win-green: #00ff88; --loss-red: #ff4d4d; }
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, var(--gold), #ff9900); padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #000; font-weight: bold; display: flex; justify-content: space-between; }
+        .panel { background: var(--bg); border: 1px solid var(--gold); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { width: 100%; padding: 10px; background: #111; border: 1px solid var(--gold); color: #fff; border-radius: 5px; box-sizing: border-box; }
+        button { background: var(--violet); border: none; color: #fff; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th { color: var(--gold); text-align: left; border-bottom: 1px solid var(--gold); padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #222; }
+        .key-box { background: #222; padding: 10px; border: 1px dashed var(--gold); text-align: center; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><span>👑 AGENTMONUZZ NETWORK ADMIN</span><span>MASTER MODE</span></div>
+        
+        <div class="panel">
+            <div style="color:var(--gold); margin-bottom:15px;">🔑 GENERATE NEW KEY</div>
+            <div class="grid">
+                <select id="key-duration">
+                    <option value="1">1 Day</option>
+                    <option value="7">7 Days</option>
+                    <option value="30">30 Days</option>
+                    <option value="365">1 Year</option>
+                </select>
+                <button onclick="generateKey()">GENERATE & SAVE</button>
+            </div>
+            <div id="new-key-display" class="key-box"></div>
+        </div>
+
+        <div class="panel">
+            <div style="color:var(--gold); margin-bottom:15px;">📋 ACTIVE KEYS</div>
+            <table>
+                <thead><tr><th>KEY</th><th>EXPIRY</th><th>STATUS</th><th>ACTION</th></tr></thead>
+                <tbody id="key-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmUULdPLLfasvS3HbjN5mpkoxCU8q2t4U",
+            authDomain: "shakil-1102d.firebaseapp.com",
+            databaseURL: "https://shakil-1102d-default-rtdb.firebaseio.com",
+            projectId: "shakil-1102d",
+            storageBucket: "shakil-1102d.firebasestorage.app",
+            messagingSenderId: "758362426786",
+            appId: "1:758362426786:web:1a5adb3405296189ec36fb"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function generateKey() {
+            const days = document.getElementById('key-duration').value;
+            const key = "AGENTMONUZZ-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+            const expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+
+            db.ref('active_keys/' + key).set({
+                key: key,
+                expiry: expiry,
+                created: Date.now(),
+                status: "active"
+            }).then(() => {
+                const display = document.getElementById('new-key-display');
+                display.style.display = 'block';
+                display.innerHTML = `<strong>NEW KEY:</strong> ${key}<br><small>Expires in ${days} day(s)</small>`;
+                loadKeys();
+            });
+        }
+
+        function loadKeys() {
+            db.ref('active_keys').on('value', (snap) => {
+                const data = snap.val();
+                let html = '';
+                for(let k in data) {
+                    const isExpired = Date.now() > data[k].expiry;
+                    html += `<tr>
+                        <td>${k}</td>
+                        <td>${new Date(data[k].expiry).toLocaleDateString()}</td>
+                        <td style="color:${isExpired ? 'red' : '#00ff88'}">${isExpired ? 'EXPIRED' : 'ACTIVE'}</td>
+                        <td><button style="background:red; padding:3px 8px;" onclick="deleteKey('${k}')">DEL</button></td>
+                    </tr>`;
+                }
+                document.getElementById('key-list').innerHTML = html;
+            });
+        }
+
+        function deleteKey(k) { if(confirm('Delete key?')) db.ref('active_keys/'+k).remove(); }
+        loadKeys();
+    </script>
+</body>
+</html>
