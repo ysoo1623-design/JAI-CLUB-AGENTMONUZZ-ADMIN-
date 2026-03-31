@@ -3,52 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👑 AGENTMONUZZ NETWORK ADMIN 👑</title>
+    <title>👑AGEBTMONUZZ NETWORK ADMIN👑</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <style>
-        :root { --gold: #ffcc00; --violet: #d400ff; --bg: rgba(15, 15, 15, 0.95); --win-green: #00ff88; --loss-red: #ff4d4d; }
-        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, var(--gold), #ff9900); padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #000; font-weight: bold; display: flex; justify-content: space-between; }
-        .panel { background: var(--bg); border: 1px solid var(--gold); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        input, select { width: 100%; padding: 10px; background: #111; border: 1px solid var(--gold); color: #fff; border-radius: 5px; box-sizing: border-box; }
-        button { background: var(--violet); border: none; color: #fff; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        th { color: var(--gold); text-align: left; border-bottom: 1px solid var(--gold); padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
-        .key-box { background: #222; padding: 10px; border: 1px dashed var(--gold); text-align: center; margin-top: 10px; display: none; }
+        :root { 
+            --gold: #ffcc00; 
+            --violet: #d400ff; 
+            --bg: rgba(15, 15, 15, 0.95); 
+            --win-green: #00ff88; 
+            --loss-red: #ff4d4d;
+        }
+        
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; overflow: auto; height: auto; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header { 
+            background: linear-gradient(135deg, var(--gold), #ff9900); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel { 
+            background: var(--bg); 
+            border: 1px solid var(--gold); 
+            border-radius: 10px; 
+            padding: 20px; 
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .panel-title { 
+            color: var(--gold); 
+            font-size: 18px; 
+            margin-bottom: 15px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            padding-bottom: 10px;
+        }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        
+        .form-group { margin-bottom: 15px; }
+        
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 12px; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            background: rgba(0,0,0,0.5); 
+            border: 1px solid var(--gold); 
+            color: #fff; 
+            border-radius: 5px; 
+            box-sizing: border-box;
+        }
+        
+        button { 
+            background: transparent; 
+            border: 1px solid var(--violet); 
+            color: #fff; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        button:hover { background: var(--violet); }
+        
+        .btn-success { border-color: var(--win-green); }
+        .btn-success:hover { background: var(--win-green); color: #000; }
+        
+        .btn-danger { border-color: var(--loss-red); }
+        .btn-danger:hover { background: var(--loss-red); }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 14px;
+        }
+        
+        th { 
+            background: rgba(255,204,0,0.2); 
+            color: var(--gold); 
+            padding: 10px; 
+            text-align: left; 
+            border-bottom: 2px solid var(--gold);
+        }
+        
+        td { 
+            padding: 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        tr:hover { background: rgba(255,255,255,0.05); }
+        
+        .badge { 
+            padding: 3px 8px; 
+            border-radius: 3px; 
+            font-size: 11px; 
+            font-weight: bold;
+        }
+        
+        .badge-active { background: var(--win-green); color: #000; }
+        .badge-inactive { background: var(--loss-red); color: #fff; }
+        
+        .key-display { 
+            background: #222; 
+            padding: 5px 10px; 
+            border-radius: 3px; 
+            font-family: monospace; 
+            cursor: pointer;
+        }
+        
+        .stats-card { 
+            background: linear-gradient(135deg, #222, #333); 
+            padding: 15px; 
+            border-radius: 5px; 
+            border-left: 4px solid var(--gold);
+        }
+        
+        .stats-number { font-size: 24px; font-weight: bold; color: var(--gold); }
+        
+        .search-box { margin-bottom: 15px; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid var(--gold);
+            border-radius: 5px;
+            cursor: pointer;
+            background: transparent;
+        }
+        
+        .tab.active {
+            background: var(--gold);
+            color: #000;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--bg);
+            border: 2px solid var(--gold);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        
+        .close {
+            float: right;
+            cursor: pointer;
+            color: var(--gold);
+            font-size: 20px;
+        }
+        
+        .bot-config {
+            background: #111;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header"><span>👑 AGENTMONUZZ NETWORK ADMIN</span><span>MASTER MODE</span></div>
-        
-        <div class="panel">
-            <div style="color:var(--gold); margin-bottom:15px;">🔑 GENERATE NEW KEY</div>
-            <div class="grid">
-                <select id="key-duration">
-                    <option value="1">1 Day</option>
-                    <option value="7">7 Days</option>
-                    <option value="30">30 Days</option>
-                    <option value="365">1 Year</option>
-                </select>
-                <button onclick="generateKey()">GENERATE & SAVE</button>
-            </div>
-            <div id="new-key-display" class="key-box"></div>
+        <div class="header">
+            <span>👑 AGENTMONUZZ NETWORK ADMIN PANEL</span>
+            <span id="admin-status">MASTER ADMIN</span>
         </div>
-
-        <div class="panel">
-            <div style="color:var(--gold); margin-bottom:15px;">📋 ACTIVE KEYS</div>
-            <table>
-                <thead><tr><th>KEY</th><th>EXPIRY</th><th>STATUS</th><th>ACTION</th></tr></thead>
-                <tbody id="key-list"></tbody>
-            </table>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('users')">USERS</div>
+            <div class="tab" onclick="showTab('keys')">KEYS</div>
+            <div class="tab" onclick="showTab('stats')">STATISTICS</div>
+            <div class="tab" onclick="showTab('bot')">BOT CONFIG</div>
+        </div>
+        
+        <!-- USERS TAB -->
+        <div id="users-tab" class="tab-content active">
+            <div class="panel">
+                <div class="panel-title">➕ ADD NEW USER</div>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>USER ID</label>
+                        <input type="text" id="new-user-id" placeholder="Enter user ID">
+                    </div>
+                    <div class="form-group">
+                        <label>PASSWORD</label>
+                        <input type="text" id="new-user-pass" placeholder="Enter password">
+                    </div>
+                    <div class="form-group">
+                        <label>ACCESS TYPE</label>
+                        <select id="new-user-type">
+                            <option value="user">USER</option>
+                            <option value="admin">ADMIN</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-success" onclick="addUser()">CREATE USER</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">📋 USER LIST</div>
+                <div class="search-box">
+                    <input type="text" id="user-search" placeholder="Search users..." onkeyup="searchUsers()">
+                </div>
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>USER ID</th>
+                            <th>PASSWORD</th>
+                            <th>TYPE</th>
+                            <th>STATUS</th>
+                            <th>CREATED</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- KEYS TAB -->
+        <div id="keys-tab" class="tab-content">
+            <div class="panel">
+                <div class="panel-title">🔑 GENERATE ACCESS KEY</div>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>KEY TYPE</label>
+                        <select id="key-type">
+                            <option value="1month">1 MONTH</option>
+                            <option value="3months">3 MONTHS</option>
+                            <option value="6months">6 MONTHS</option>
+                            <option value="1year">1 YEAR</option>
+                            <option value="lifetime">LIFETIME</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ASSIGN TO USER (Optional)</label>
+                        <input type="text" id="key-user" placeholder="User ID">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-success" onclick="generateKey()">GENERATE KEY</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">🔐 ACTIVE KEYS</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>KEY</th>
+                            <th>TYPE</th>
+                            <th>USER</th>
+                            <th>CREATED</th>
+                            <th>EXPIRY</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keys-list"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- STATISTICS TAB -->
+        <div id="stats-tab" class="tab-content">
+            <div class="grid">
+                <div class="stats-card">
+                    <div>Total Users</div>
+                    <div class="stats-number" id="total-users">0</div>
+                </div>
+                <div class="stats-card">
+                    <div>Active Keys</div>
+                    <div class="stats-number" id="active-keys">0</div>
+                </div>
+                <div class="stats-card">
+                    <div>Today Logins</div>
+                    <div class="stats-number" id="today-logins">0</div>
+                </div>
+                <div class="stats-card">
+                    <div>Active Sessions</div>
+                    <div class="stats-number" id="active-sessions">0</div>
+                </div>
+            </div>
+            
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">📊 ACCESS LOGS</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                            <th>ACTION</th>
+                            <th>TIME</th>
+                            <th>IP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-list"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- BOT CONFIG TAB -->
+        <div id="bot-tab" class="tab-content">
+            <div class="panel">
+                <div class="panel-title">🤖 BOT CONFIGURATION</div>
+                
+                <div class="bot-config">
+                    <h3 style="color: var(--gold);">BOT ACCESS TOKEN</h3>
+                    <div class="form-group">
+                        <label>Bot Token</label>
+                        <input type="text" id="bot-token" placeholder="Enter bot token">
+                    </div>
+                    <button class="btn-success" onclick="saveBotConfig()">SAVE BOT CONFIG</button>
+                </div>
+                
+                <div class="bot-config" style="margin-top: 20px;">
+                    <h3 style="color: var(--gold);">API ENDPOINTS</h3>
+                    <div class="form-group">
+                        <label>API URL</label>
+                        <input type="text" id="api-url" value="https://draw.ar-lottery01.com/WinGo/WinGo_" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Database Path</label>
+                        <input type="text" id="db-path" value="shakil-1102d-default-rtdb.firebaseio.com" readonly>
+                    </div>
+                </div>
+                
+                <div class="bot-config">
+                    <h3 style="color: var(--gold);">BOT COMMANDS</h3>
+                    <table>
+                        <tr><td>/start</td><td>Start the bot</td></tr>
+                        <tr><td>/login [key]</td><td>Login with access key</td></tr>
+                        <tr><td>/status</td><td>Check account status</td></tr>
+                        <tr><td>/predict</td><td>Get prediction</td></tr>
+                        <tr><td>/history</td><td>View history</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL for showing generated key -->
+    <div id="key-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 style="color: var(--gold);">🔑 KEY GENERATED</h3>
+            <p>Your access key:</p>
+            <div class="key-display" id="generated-key" onclick="copyKey()">KEY_HERE</div>
+            <p style="color: #aaa; font-size: 12px;">Click to copy</p>
+            <button onclick="closeModal()">CLOSE</button>
         </div>
     </div>
 
     <script>
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBmUULdPLLfasvS3HbjN5mpkoxCU8q2t4U",
             authDomain: "shakil-1102d.firebaseapp.com",
@@ -56,17 +395,231 @@
             projectId: "shakil-1102d",
             storageBucket: "shakil-1102d.firebasestorage.app",
             messagingSenderId: "758362426786",
-            appId: "1:758362426786:web:1a5adb3405296189ec36fb"
+            appId: "1:758362426786:web:1a5adb3405296189ec36fb",
+            measurementId: "G-WNEHXQ9RXW"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
+        
+        // Admin login check (simple for demo)
+        let isAdmin = true;
+        
+        // Load data on page load
+        window.onload = function() {
+            loadUsers();
+            loadKeys();
+            loadStats();
+            loadLogs();
+        };
+        
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+        
+        // USER MANAGEMENT
+        function loadUsers() {
+            db.ref('passwords').once('value', (snapshot) => {
+                const users = snapshot.val() || {};
+                let html = '';
+                
+                for(let uid in users) {
+                    const user = users[uid];
+                    html += `<tr>
+                        <td>${uid}</td>
+                        <td>${user.password || 'N/A'}</td>
+                        <td>${user.type || 'user'}</td>
+                        <td><span class="badge ${user.active ? 'badge-active' : 'badge-inactive'}">${user.active ? 'ACTIVE' : 'INACTIVE'}</span></td>
+                        <td>${user.created || 'N/A'}</td>
+                        <td>
+                            <button onclick="toggleUserStatus('${uid}', ${!user.active})" style="margin-right:5px;">${user.active ? 'DEACTIVATE' : 'ACTIVATE'}</button>
+                            <button class="btn-danger" onclick="deleteUser('${uid}')">DELETE</button>
+                        </td>
+                    </tr>`;
+                }
+                
+                document.getElementById('users-list').innerHTML = html || '<tr><td colspan="6" style="text-align:center;">No users found</td></tr>';
+            });
+        }
+        
+        function addUser() {
+            const uid = document.getElementById('new-user-id').value;
+            const pass = document.getElementById('new-user-pass').value;
+            const type = document.getElementById('new-user-type').value;
+            
+            if(!uid || !pass) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            db.ref('passwords/' + uid).set({
+                password: pass,
+                type: type,
+                active: true,
+                created: new Date().toLocaleString()
+            }).then(() => {
+                alert('User created successfully');
+                document.getElementById('new-user-id').value = '';
+                document.getElementById('new-user-pass').value = '';
+                loadUsers();
+            });
+        }
+        
+        function toggleUserStatus(uid, status) {
+            db.ref('passwords/' + uid + '/active').set(status).then(loadUsers);
+        }
+        
+        function deleteUser(uid) {
+            if(confirm('Are you sure you want to delete this user?')) {
+                db.ref('passwords/' + uid).remove().then(loadUsers);
+            }
+        }
+        
+        function searchUsers() {
+            const search = document.getElementById('user-search').value.toLowerCase();
+            // Implement search functionality
+        }
+        
+        // KEY MANAGEMENT
         function generateKey() {
-            const days = document.getElementById('key-duration').value;
-            const key = "AGENTMONUZZ-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-            const expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
-
-            db.ref('active_keys/' + key).set({
+            const type = document.getElementById('key-type').value;
+            const user = document.getElementById('key-user').value;
+            
+            // Generate random key
+            const key = 'AGENTMONUZZ-' + Math.random().toString(36).substring(2, 15).toUpperCase() + 
+                       Math.random().toString(36).substring(2, 15).toUpperCase();
+            
+            // Calculate expiry
+            let expiry = new Date();
+            switch(type) {
+                case '1month': expiry.setMonth(expiry.getMonth() + 1); break;
+                case '3months': expiry.setMonth(expiry.getMonth() + 3); break;
+                case '6months': expiry.setMonth(expiry.getMonth() + 6); break;
+                case '1year': expiry.setFullYear(expiry.getFullYear() + 1); break;
+                case 'lifetime': expiry.setFullYear(expiry.getFullYear() + 100); break;
+            }
+            
+            const keyData = {
+                key: key,
+                type: type,
+                assignedTo: user || null,
+                created: new Date().toLocaleString(),
+                expiry: expiry.toLocaleString(),
+                active: true,
+                used: false
+            };
+            
+            db.ref('keys/' + key.replace(/\./g, '_')).set(keyData).then(() => {
+                document.getElementById('generated-key').innerText = key;
+                document.getElementById('key-modal').style.display = 'block';
+                loadKeys();
+            });
+        }
+        
+        function loadKeys() {
+            db.ref('keys').once('value', (snapshot) => {
+                const keys = snapshot.val() || {};
+                let html = '';
+                
+                for(let kid in keys) {
+                    const key = keys[kid];
+                    html += `<tr>
+                        <td class="key-display">${key.key}</td>
+                        <td>${key.type}</td>
+                        <td>${key.assignedTo || 'Unassigned'}</td>
+                        <td>${key.created}</td>
+                        <td>${key.expiry}</td>
+                        <td><span class="badge ${key.active ? 'badge-active' : 'badge-inactive'}">${key.active ? 'ACTIVE' : 'INACTIVE'}</span></td>
+                        <td>
+                            <button onclick="toggleKeyStatus('${kid}', ${!key.active})">${key.active ? 'DEACTIVATE' : 'ACTIVATE'}</button>
+                            <button class="btn-danger" onclick="deleteKey('${kid}')">DELETE</button>
+                        </td>
+                    </tr>`;
+                }
+                
+                document.getElementById('keys-list').innerHTML = html || '<tr><td colspan="7" style="text-align:center;">No keys found</td></tr>';
+            });
+        }
+        
+        function toggleKeyStatus(kid, status) {
+            db.ref('keys/' + kid + '/active').set(status).then(loadKeys);
+        }
+        
+        function deleteKey(kid) {
+            if(confirm('Delete this key?')) {
+                db.ref('keys/' + kid).remove().then(loadKeys);
+            }
+        }
+        
+        function copyKey() {
+            const key = document.getElementById('generated-key').innerText;
+            navigator.clipboard.writeText(key);
+            alert('Key copied to clipboard!');
+        }
+        
+        function closeModal() {
+            document.getElementById('key-modal').style.display = 'none';
+        }
+        
+        // STATISTICS
+        function loadStats() {
+            db.ref('passwords').once('value', (snapshot) => {
+                const users = snapshot.val() || {};
+                document.getElementById('total-users').innerText = Object.keys(users).length;
+            });
+            
+            db.ref('keys').once('value', (snapshot) => {
+                const keys = snapshot.val() || {};
+                let active = 0;
+                Object.values(keys).forEach(k => { if(k.active) active++; });
+                document.getElementById('active-keys').innerText = active;
+            });
+        }
+        
+        function loadLogs() {
+            db.ref('logs').limitToLast(10).once('value', (snapshot) => {
+                const logs = snapshot.val() || {};
+                let html = '';
+                
+                for(let id in logs) {
+                    const log = logs[id];
+                    html += `<tr>
+                        <td>${log.user}</td>
+                        <td>${log.action}</td>
+                        <td>${log.time}</td>
+                        <td>${log.ip}</td>
+                    </tr>`;
+                }
+                
+                document.getElementById('logs-list').innerHTML = html || '<tr><td colspan="4" style="text-align:center;">No logs found</td></tr>';
+            });
+        }
+        
+        // BOT CONFIG
+        function saveBotConfig() {
+            const token = document.getElementById('bot-token').value;
+            if(token) {
+                db.ref('config/botToken').set(token);
+                alert('Bot configuration saved!');
+            }
+        }
+        
+        // Initialize drag for panels if needed
+        // Add click outside modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('key-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>            db.ref('active_keys/' + key).set({
                 key: key,
                 expiry: expiry,
                 created: Date.now(),
